@@ -10,4 +10,4 @@
 	6.Creat a shell script file;
 	0. Exit;
 
-The shell script compiles an excutes the main file. To use this file type "./run.sh <main file>.java <main file>", exemple: "./run.sh Main.java Main"
+The shell script compiles an excutes the main file. To use this file type "./run.sh (main file).java (main file)", exemple: "./run.sh Main.java Main"
