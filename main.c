@@ -98,7 +98,7 @@ void menu(){
 	}
 
 	if(opr==6){
-		writeToFile("run.sh", "clean=\"rm -f *.class\"\necho $clean\n$clean\n\ncompile=\"javac $1\"\necho $compile\n$compile\n\nexec=\"java $2 $3\"\necho $exec\n$exec");
+		writeToFile("run.sh", "compile=\"javac $1\"\necho $compile\n$compile\n\nexec=\"java $2\"\necho $exec\n$exec\n\nclean=\"rm -f *.class\"\necho $clean\n$clean");
 		execlp("chmod", "chmod", "0744", "run.sh", NULL);
 	}
 
