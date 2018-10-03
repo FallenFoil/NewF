@@ -116,3 +116,9 @@ int main(int argc, char const *argv[]){
 
 	return 0;
 }
+
+/*
+exit(1)=>noArgs
+exit(2)=>wrong input
+exit(3)=>exit the app
+*/

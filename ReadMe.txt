@@ -11,4 +11,3 @@
 	0. Exit;
 
 The shell script compiles an excutes the main file. To use this file type "./run.sh (main file).java (main file)", exemple: "./run.sh Main.java Main"
-For faster use copy this line to the file "~/.bashrc" :"alias NewF='cp <path of NewF> . && ./NewF && rm NewF'".This copies, executes and deletes the executable, in that order.
