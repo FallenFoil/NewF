@@ -11,6 +11,10 @@ void writeToFile(char *file, char *txt){
 	write(fd, txt, strlen(txt));
 	close(fd);
 	printf("Done!\n");
+	char* cmd = malloc(6 + strlen(file));
+	strcpy(cmd, "subl ");
+	strcat(cmd, file);
+	system(cmd);
 }
 
 char *class(char *name){
