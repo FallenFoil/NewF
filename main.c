@@ -50,10 +50,10 @@ char *enums(char *name){
 }
 
 char *unitTeste(char *name){
-	char *txt=malloc(strlen(name) + strlen("import static org.junit.Assert.*;\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class {\n	@Before\n	public void setUp(){\n        \n	}\n\n	@After\n	public void tearDown(){\n		\n	}\n}") + 1);
+	char *txt=malloc(strlen(name) + strlen("import static org.junit.Assert.*;\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class {\n\t@Before\n\tpublic void setUp(){\n\t\t\n\t}\n\n\t@After\n\tpublic void tearDown(){\n\t\t\n\t}\n}") + 1);
 	strcpy(txt, "import static org.junit.Assert.*;\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class ");
 	strcat(txt, name);
-	strcat(txt, "{\n	@Before\n	public void setUp(){\n        \n	}\n\n	@After\n	public void tearDown(){\n		\n	}\n}");
+	strcat(txt, "{\n\t@Before\n\tpublic void setUp(){\n\t\t\n\t}\n\n\t@After\n\tpublic void tearDown(){\n\t\t\n\t}\n}");
 	return txt;
 }
 
@@ -84,21 +84,21 @@ void analizeOPR(int opr, char *name){
 	}
 }
 
-void menu(){
+void java(){
 	int opr;
 	char buff[1024];
 
-	printf("Type:\n1-Class;\n2-Abstract Class;\n3-Interface;\n4-Enum;\n5-Unit Test;\n6-Shell Script;\n0-Exit;\n");
+	printf("Type:\n1-Class;\n2-Abstract Class;\n3-Interface;\n4-Enum;\n5-Unit Test;\n6-Shell Script;\n0-Back;\n>");
 	scanf("%d", &opr);
-	
+	printf("====================\n");
+
 	if(opr>6){
 		write(2,"Wrong Input\n", 13);
 		exit(0);
 	}
 
 	if(opr==0){
-		printf("Good Bye, my love!\n");
-		exit(0);
+		menu();
 	}
 
 	if(opr==6){
@@ -114,10 +114,104 @@ void menu(){
 	analizeOPR(opr, name);
 }
 
+void flex(){
+	char buff[1024];
+	printf("Name(without .l):\n");
+	scanf("%s", buff);
+
+	char *file=malloc(strlen(buff)+3);
+
+	strcpy(file,buff);
+	strcat(file,".l");
+
+	char* txt = strdup("%{\n#include <stdio.h>\n%}\n\n%%\n\n%%\n\nint yywrap(){\n\treturn 1;\n}\n\nint main(){\n\tprintf(\"Inicio da filtragem\\n\");\n\tyylex();\n\tprintf(\"\\nFim da filtragem\\n\");\n\treturn 0;\n}");
+
+	int fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	write(fd, txt, strlen(txt));
+	close(fd);
+
+	char* cmd = malloc(6 + strlen(file));
+	strcpy(cmd, "subl ");
+	strcat(cmd, file);
+	system(cmd);
+}
+
+void c(){
+	char buff[1024];
+	printf("Name(without .c):\n");
+	scanf("%s", buff);
+
+	char *file=malloc(strlen(buff)+3);
+
+	strcpy(file,buff);
+	strcat(file,".c");
+
+	char* txt = strdup("#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char const *argv[]){\n\treturn 0;\n}");
+
+	int fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	write(fd, txt, strlen(txt));
+	close(fd);
+
+	char* cmd = malloc(6 + strlen(file));
+	strcpy(cmd, "subl ");
+	strcat(cmd, file);
+	system(cmd);
+}
+
+void gawk(){
+	char buff[1024];
+	printf("Name(without .gawk):\n");
+	scanf("%s", buff);
+
+	char *file=malloc(strlen(buff)+6);
+
+	strcpy(file,buff);
+	strcat(file,".gawk");
+
+	char* txt = strdup("BEGIN\t\t\t\t\t{ FS=\" \"; RS=\"\\n\" }\n\nEND\t\t\t\t\t\t{  }");
+
+	int fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	write(fd, txt, strlen(txt));
+	close(fd);
+
+	char* cmd = malloc(6 + strlen(file));
+	strcpy(cmd, "subl ");
+	strcat(cmd, file);
+	system(cmd);
+}
+
+void menu(){
+	int opr;
+
+	printf("Language:\n1-Java;\n2-C;\n3-Flex;\n4-Gawk\n0-Exit;\n>");
+	scanf("%d", &opr);
+	printf("====================\n");
+
+	switch(opr){
+		case 0:
+			printf("Good Bye, my love!\n");
+			exit(0);
+			break;
+		case 1:
+			java();
+			break;
+		case 2:
+			c();
+			break;
+		case 3:
+			flex();
+			break;
+		case 4:
+			gawk();
+			break;
+		default:
+			break;
+	}
+}
+
 int main(int argc, char const *argv[]){
-
+	printf("====================\n");
 	menu();
-
 	return 0;
 }
 

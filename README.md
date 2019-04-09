@@ -1,13 +1,7 @@
-=====How to Use=====
--Compiling: "make"
--Executing: "./NewF"
--Menu: 
-	1.Creat a class file;
-	2.Creat an abstract class file;
-	3.Creat an interface file;
-	4.Creat an enun file;
-	5.Creat an unit test file;
-	6.Creat a shell script file;
-	0. Exit;
+## NewF
 
-The shell script compiles an excutes the main file. To use this file type "./run.sh (main file).java (main file)", exemple: "./run.sh Main.java Main"
+**NewF** is a program that creates programming files from different programming languages, like C, Java, flex and gawk.
+
+## How to Use
+* **Compiling:** "make"
+* **Executing:** "./NewF"
