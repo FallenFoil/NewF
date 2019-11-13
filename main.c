@@ -10,9 +10,8 @@ void writeToFile(char *file, char *txt){
 	int fd=open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	write(fd, txt, strlen(txt));
 	close(fd);
-	printf("Done!\n");
 	char* cmd = malloc(6 + strlen(file));
-	strcpy(cmd, "subl ");
+	strcpy(cmd, "code ");
 	strcat(cmd, file);
 	system(cmd);
 }
@@ -61,7 +60,6 @@ void analizeOPR(int opr, char *name){
 	char *file=malloc(strlen(name) + 6);
 	strcpy(file, name);
 	strcat(file, ".java");
-	printf("%s\n", file);
 
 	switch(opr){
 		case 1:
@@ -126,14 +124,7 @@ void flex(){
 
 	char* txt = strdup("%{\n#include <stdio.h>\n%}\n\n%%\n\n%%\n\nint yywrap(){\n\treturn 1;\n}\n\nint main(){\n\tprintf(\"Inicio da filtragem\\n\");\n\tyylex();\n\tprintf(\"\\nFim da filtragem\\n\");\n\treturn 0;\n}");
 
-	int fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	write(fd, txt, strlen(txt));
-	close(fd);
-
-	char* cmd = malloc(6 + strlen(file));
-	strcpy(cmd, "subl ");
-	strcat(cmd, file);
-	system(cmd);
+	writeToFile(file, txt);
 }
 
 void c(){
@@ -148,14 +139,7 @@ void c(){
 
 	char* txt = strdup("#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char const *argv[]){\n\treturn 0;\n}");
 
-	int fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	write(fd, txt, strlen(txt));
-	close(fd);
-
-	char* cmd = malloc(6 + strlen(file));
-	strcpy(cmd, "subl ");
-	strcat(cmd, file);
-	system(cmd);
+	writeToFile(file, txt);
 }
 
 void gawk(){
@@ -170,14 +154,7 @@ void gawk(){
 
 	char* txt = strdup("BEGIN\t\t\t\t\t{ FS=\" \"; RS=\"\\n\" }\n\nEND\t\t\t\t\t\t{  }");
 
-	int fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	write(fd, txt, strlen(txt));
-	close(fd);
-
-	char* cmd = malloc(6 + strlen(file));
-	strcpy(cmd, "subl ");
-	strcat(cmd, file);
-	system(cmd);
+	writeToFile(file, txt);
 }
 
 void menu(){
