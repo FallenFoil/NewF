@@ -13,6 +13,10 @@ void writeToFile(char *file, char *txt){
 	char* cmd = malloc(6 + strlen(file));
 	strcpy(cmd, "code ");
 	strcat(cmd, file);
+
+	printf("====================\n");
+	printf("Opening File with Visual Code\n");
+
 	system(cmd);
 }
 
@@ -83,15 +87,15 @@ void analizeOPR(int opr, char *name){
 }
 
 void java(){
-	int opr;
+	int opr = -1;
 	char buff[1024];
-
-	printf("Type:\n1-Class;\n2-Abstract Class;\n3-Interface;\n4-Enum;\n5-Unit Test;\n6-Shell Script;\n0-Back;\n>");
+	
+	printf("Type:\n  1-Class;\n  2-Abstract Class;\n  3-Interface;\n  4-Enum;\n  5-Unit Test;\n  6-Shell Script;\n  0-Back;\n\n$ ");
 	scanf("%d", &opr);
 	printf("====================\n");
 
-	if(opr>6){
-		write(2,"Wrong Input\n", 13);
+	if(opr>6 || opr==-1){
+		printf("Wrong Input\n");
 		exit(0);
 	}
 
@@ -104,7 +108,7 @@ void java(){
 		execlp("chmod", "chmod", "0744", "run.sh", NULL);
 	}
 
-	printf("Name(without .java):\n");
+	printf("Name(without .java):\n$ ");
 	scanf("%s", buff);
 
 	char *name=(strdup(buff));
@@ -114,7 +118,7 @@ void java(){
 
 void flex(){
 	char buff[1024];
-	printf("Name(without .l):\n");
+	printf("Name(without .l):\n$ ");
 	scanf("%s", buff);
 
 	char *file=malloc(strlen(buff)+3);
@@ -129,7 +133,7 @@ void flex(){
 
 void c(){
 	char buff[1024];
-	printf("Name(without .c):\n");
+	printf("Name(without .c):\n$ ");
 	scanf("%s", buff);
 
 	char *file=malloc(strlen(buff)+3);
@@ -144,7 +148,7 @@ void c(){
 
 void gawk(){
 	char buff[1024];
-	printf("Name(without .gawk):\n");
+	printf("Name(without .gawk):\n$ ");
 	scanf("%s", buff);
 
 	char *file=malloc(strlen(buff)+6);
@@ -158,10 +162,11 @@ void gawk(){
 }
 
 void menu(){
-	int opr;
+	int opr = -1;
 
-	printf("Language:\n1-Java;\n2-C;\n3-Flex;\n4-Gawk\n0-Exit;\n>");
+	printf("Language:\n  1-Java;\n  2-C;\n  3-Flex;\n  4-Gawk\n  0-Exit;\n\n$ ");
 	scanf("%d", &opr);
+
 	printf("====================\n");
 
 	switch(opr){
@@ -182,11 +187,15 @@ void menu(){
 			gawk();
 			break;
 		default:
+			printf("Wrong Input\n");
 			break;
 	}
 }
 
 int main(int argc, char const *argv[]){
+	printf("====================\n");
+	printf("     Welcome to\n");
+	printf("        NewF\n");
 	printf("====================\n");
 	menu();
 	return 0;
