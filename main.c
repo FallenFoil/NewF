@@ -3,24 +3,56 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
+static const char *fileContent[] = {
+	//C
+	"#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char const *argv[]){\n\treturn 0;\n}",
+	//C++
+	"#include <iostream>\n\nusing namespace std;\n\nint main(int argc, char const *argv[]){\n\tcout << \"Hello, World!\" << endl;\n\treturn 0;\n}",
+	//Shell Script
+	"#!/bin/bash\n\n",
+	//Flex
+	"%{\n#include <stdio.h>\n%}\n\n%%\n\n%%\n\nint yywrap(){\n\treturn 1;\n}\n\nint main(){\n\tyyin = fopen(\"file\", \"r\");\n\tprintf(\"Inicio da filtragem\\n\");\n\tyylex();\n\tprintf(\"\\nFim da filtragem\\n\");\n\treturn 0;\n}",
+	//Gawk
+	"BEGIN\t\t\t\t\t{ FS=\" \"; RS=\"\\n\" }\n\nEND\t\t\t\t\t\t{  }",
+	//Java
+	NULL
+};
+
+static const char *fileExtension[] = {
+	//C
+	"c",
+	//C++
+	"cpp",
+	//Shell Script
+	"sh",
+	//Flex
+	"flex",
+	//Gawk
+	"gawk"
+};
+
+void header();
 void menu();
 
-void writeToFile(char *file, char *txt){
-	int fd=open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	write(fd, txt, strlen(txt));
+void writeToFile(char *file, int index){
+	int fd=open(file, O_CREAT | O_TRUNC | O_WRONLY, 0744);
+	write(fd, fileContent[index], strlen(fileContent[index]));
 	close(fd);
+
 	char* cmd = malloc(6 + strlen(file));
 	strcpy(cmd, "code ");
 	strcat(cmd, file);
 
-	printf("====================\n");
-	printf("Opening File with Visual Code\n");
+	chmod(file, S_IRWXU);
+
+	printf("\n\033[0;32mOpening File with Visual Code\033[0;0m\n");
 
 	system(cmd);
 }
 
-char *class(char *name){
+char *class(char name[]){
 	char *txt=malloc(strlen(name) + strlen("public class {\n	\n}") + 1);
 	strcpy(txt, "public class ");
 	strcat(txt, name);
@@ -28,7 +60,7 @@ char *class(char *name){
 	return txt;
 }
 
-char *abstract(char *name){
+char *abstract(char name[]){
 	char *txt=malloc(strlen(name) + strlen("public abstract class {\n	\n}") + 1);
 	strcpy(txt, "public abstract class ");
 	strcat(txt, name);
@@ -36,7 +68,7 @@ char *abstract(char *name){
 	return txt;
 }
 
-char *interface(char *name){
+char *interface(char name[]){
 	char *txt=malloc(strlen(name) + strlen("public interface {\n	\n}") + 1);
 	strcpy(txt, "public interface ");
 	strcat(txt, name);
@@ -44,7 +76,7 @@ char *interface(char *name){
 	return txt;
 }
 
-char *enums(char *name){
+char *enums(char name[]){
 	char *txt=malloc(strlen(name) + strlen("public enum {\n	\n}") + 1);
 	strcpy(txt, "public enum ");
 	strcat(txt, name);
@@ -52,7 +84,7 @@ char *enums(char *name){
 	return txt;
 }
 
-char *unitTeste(char *name){
+char *unitTeste(char name[]){
 	char *txt=malloc(strlen(name) + strlen("import static org.junit.Assert.*;\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class {\n\t@Before\n\tpublic void setUp(){\n\t\t\n\t}\n\n\t@After\n\tpublic void tearDown(){\n\t\t\n\t}\n}") + 1);
 	strcpy(txt, "import static org.junit.Assert.*;\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class ");
 	strcat(txt, name);
@@ -60,114 +92,98 @@ char *unitTeste(char *name){
 	return txt;
 }
 
-void analizeOPR(int opr, char *name){
+void analizeOPR(int opr, char name[]){
 	char *file=malloc(strlen(name) + 6);
 	strcpy(file, name);
 	strcat(file, ".java");
 
 	switch(opr){
 		case 1:
-			writeToFile(file, class(name));
+			fileContent[5] = class(name);
 			break;
 		case 2:
-			writeToFile(file, abstract(name));
+			fileContent[5] = abstract(name);
 			break;
 		case 3:
-			writeToFile(file, interface(name));
+			fileContent[5] = interface(name);
 			break;
 		case 4:
-			writeToFile(file, enums(name));
+			fileContent[5] = enums(name);
 			break;
 		case 5:
-			writeToFile(file, unitTeste(name));
+			fileContent[5] = unitTeste(name);
 			break;
 		default:
 			break;
 	}
+
+	writeToFile(file, 5);
 }
 
 void java(){
-	int opr = -1;
-	char buff[1024];
+	int opr = -1, read = 0;
 	
-	printf("Type:\n  1-Class;\n  2-Abstract Class;\n  3-Interface;\n  4-Enum;\n  5-Unit Test;\n  6-Shell Script;\n  0-Back;\n\n$ ");
-	scanf("%d", &opr);
-	printf("====================\n");
+	header();
+	
+	printf("\nType:\n  1) Class;\n  2) Abstract Class;\n  3) Interface;\n  4) Enum;\n  5) Unit Test;\n  0) Back;\n");
+	
+	while(opr < 0 || opr > 5){
+		if(read != 0){
+			printf("\033[0;31mWrong Input\033[0;0m\n");
+		}
 
-	if(opr>6 || opr==-1){
-		printf("Wrong Input\n");
-		exit(0);
+		printf("\n$ ");
+		read = scanf("%d", &opr);
 	}
 
-	if(opr==0){
+	if(opr == 0){
 		menu();
 	}
+	else{
+		char buff[30];
+		printf("Name(without .java):\n$ ");
+		scanf("%30s", buff);
 
-	if(opr==6){
-		writeToFile("run.sh", "compile=\"javac $1\"\necho $compile\n$compile\n\nexec=\"java $2\"\necho $exec\n$exec\n\nclean=\"rm -f *.class\"\necho $clean\n$clean");
-		execlp("chmod", "chmod", "0744", "run.sh", NULL);
+		analizeOPR(opr, buff);
 	}
-
-	printf("Name(without .java):\n$ ");
-	scanf("%s", buff);
-
-	char *name=(strdup(buff));
-
-	analizeOPR(opr, name);
 }
 
-void flex(){
-	char buff[1024];
-	printf("Name(without .l):\n$ ");
-	scanf("%s", buff);
+void ask4FileName(int index){
+	char buff[30];
+	printf("\nName (without .%s):\n$ ", fileExtension[index]);
+	scanf("%30s", buff);
 
-	char *file=malloc(strlen(buff)+3);
+	char* file = malloc(strlen(buff) + strlen(fileExtension[index]) + 2); //The 2 represents the dot and the '\0' character
 
-	strcpy(file,buff);
-	strcat(file,".l");
+	strcpy(file, buff);
+	strcat(file, ".");
+	strcat(file, fileExtension[index]);
 
-	char* txt = strdup("%{\n#include <stdio.h>\n%}\n\n%%\n\n%%\n\nint yywrap(){\n\treturn 1;\n}\n\nint main(){\n\tprintf(\"Inicio da filtragem\\n\");\n\tyylex();\n\tprintf(\"\\nFim da filtragem\\n\");\n\treturn 0;\n}");
-
-	writeToFile(file, txt);
+	writeToFile(file, index);
 }
 
-void c(){
-	char buff[1024];
-	printf("Name(without .c):\n$ ");
-	scanf("%s", buff);
-
-	char *file=malloc(strlen(buff)+3);
-
-	strcpy(file,buff);
-	strcat(file,".c");
-
-	char* txt = strdup("#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char const *argv[]){\n\treturn 0;\n}");
-
-	writeToFile(file, txt);
-}
-
-void gawk(){
-	char buff[1024];
-	printf("Name(without .gawk):\n$ ");
-	scanf("%s", buff);
-
-	char *file=malloc(strlen(buff)+6);
-
-	strcpy(file,buff);
-	strcat(file,".gawk");
-
-	char* txt = strdup("BEGIN\t\t\t\t\t{ FS=\" \"; RS=\"\\n\" }\n\nEND\t\t\t\t\t\t{  }");
-
-	writeToFile(file, txt);
+void header(){
+	printf("====================\n");
+	printf("     Welcome to\n");
+	printf("        NewF\n");
+	printf("====================\n");
 }
 
 void menu(){
-	int opr = -1;
+	int opr = -1, read = 0;
 
-	printf("Language:\n  1-Java;\n  2-C;\n  3-Flex;\n  4-Gawk\n  0-Exit;\n\n$ ");
-	scanf("%d", &opr);
+	header();
 
-	printf("====================\n");
+	printf("\nLanguage:\n  1) C;\n  2) C++;\n  3) Java;\n  4) Shell Script;\n  5) Flex;\n  6) Gawk;\n  0) Exit;\n");
+
+	while(opr < 0 || opr > 6){
+		if(read != 0){
+			printf("\033[0;31mWrong Input\033[0;0m\n");
+		}
+
+		printf("\n$ ");		
+		read = scanf("%d", &opr);
+	}
 
 	switch(opr){
 		case 0:
@@ -175,34 +191,30 @@ void menu(){
 			exit(0);
 			break;
 		case 1:
-			java();
+			ask4FileName(0);
 			break;
 		case 2:
-			c();
+			ask4FileName(1);
 			break;
 		case 3:
-			flex();
+			java();
 			break;
 		case 4:
-			gawk();
+			ask4FileName(2);
+			break;
+		case 5:
+			ask4FileName(3);
+			break;
+		case 6:
+			ask4FileName(4);
 			break;
 		default:
-			printf("Wrong Input\n");
 			break;
 	}
 }
 
 int main(int argc, char const *argv[]){
-	printf("====================\n");
-	printf("     Welcome to\n");
-	printf("        NewF\n");
-	printf("====================\n");
 	menu();
+
 	return 0;
 }
-
-/*
-exit(1)=>noArgs
-exit(2)=>wrong input
-exit(3)=>exit the app
-*/
