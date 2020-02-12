@@ -5,11 +5,15 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+char* Language;
+
 static const char *fileContent[] = {
 	//C
 	"#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char const *argv[]){\n\treturn 0;\n}",
 	//C++
 	"#include <iostream>\n\nusing namespace std;\n\nint main(int argc, char const *argv[]){\n\tcout << \"Hello, World!\" << endl;\n\treturn 0;\n}",
+	//Header
+	"#ifndef _H\n#define _H\n\n#endif",
 	//Shell Script
 	"#!/bin/bash\n\n",
 	//Flex
@@ -25,12 +29,14 @@ static const char *fileExtension[] = {
 	"c",
 	//C++
 	"cpp",
+	//Header
+	"h",
 	//Shell Script
 	"sh",
 	//Flex
 	"flex",
 	//Gawk
-	"gawk"
+	"awk"
 };
 
 void header();
@@ -41,13 +47,35 @@ void writeToFile(char *file, int index){
 	write(fd, fileContent[index], strlen(fileContent[index]));
 	close(fd);
 
-	char* cmd = malloc(6 + strlen(file));
-	strcpy(cmd, "code ");
+	char* cmd = malloc(strlen(Language) + 2 + strlen(file));
+	strcpy(cmd, Language);
+	strcat(cmd, " ");
 	strcat(cmd, file);
 
 	chmod(file, S_IRWXU);
 
-	printf("\n\033[0;32mOpening File with Visual Code\033[0;0m\n");
+	char* languageName;
+
+	if(strcmp(Language, "code") == 0){
+		languageName = strdup("Visual Code");
+	}
+	else if(strcmp(Language, "vi") == 0){
+		languageName = strdup("Vi");
+	}
+	else if(strcmp(Language, "vim") == 0){
+		languageName = strdup("Vim");
+	}
+	else if(strcmp(Language, "nano") == 0){
+		languageName = strdup("Nano");
+	}
+	else if(strcmp(Language, "vim") == 0){
+		languageName = strdup("Vim");
+	}
+	else{
+		languageName = strdup(Language);
+	}
+
+	printf("\n\033[0;32mOpening File with %s\033[0;0m\n", languageName);
 
 	system(cmd);
 }
@@ -174,7 +202,7 @@ void menu(){
 
 	header();
 
-	printf("\nLanguage:\n  1) C;\n  2) C++;\n  3) Java;\n  4) Shell Script;\n  5) Flex;\n  6) Gawk;\n  0) Exit;\n");
+	printf("\nLanguage:\n  1) C;\n  2) C++;\n  3) Header;\n  4) Java;\n  5) Shell Script;\n  6) Flex;\n  7) Gawk;\n  0) Exit;\n");
 
 	while(opr < 0 || opr > 6){
 		if(read != 0){
@@ -197,10 +225,10 @@ void menu(){
 			ask4FileName(1);
 			break;
 		case 3:
-			java();
+			ask4FileName(2);
 			break;
 		case 4:
-			ask4FileName(2);
+			java();
 			break;
 		case 5:
 			ask4FileName(3);
@@ -208,12 +236,23 @@ void menu(){
 		case 6:
 			ask4FileName(4);
 			break;
+		case 7:
+			ask4FileName(5);
+			break;
 		default:
 			break;
 	}
 }
 
 int main(int argc, char const *argv[]){
+	if(argc > 1){
+		Language = strdup(argv[1]);
+		printf("%s\n", argv[1]);
+	}
+	else{
+		Language = strdup("code");
+	}
+
 	menu();
 
 	return 0;
