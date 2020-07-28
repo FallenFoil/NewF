@@ -12,16 +12,12 @@ static const char *fileContent[] = {
 	"#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char const *argv[]){\n\treturn 0;\n}",
 	//C++
 	"#include <iostream>\n\nusing namespace std;\n\nint main(int argc, char const *argv[]){\n\tcout << \"Hello, World!\" << endl;\n\treturn 0;\n}",
-	//Header
-	"#ifndef _H\n#define _H\n\n#endif",
 	//Shell Script
 	"#!/bin/bash\n\n",
 	//Flex
 	"%{\n#include <stdio.h>\n%}\n\n%%\n\n%%\n\nint yywrap(){\n\treturn 1;\n}\n\nint main(){\n\tyyin = fopen(\"file\", \"r\");\n\tprintf(\"Inicio da filtragem\\n\");\n\tyylex();\n\tprintf(\"\\nFim da filtragem\\n\");\n\treturn 0;\n}",
 	//Gawk
-	"BEGIN\t\t\t\t\t{ FS=\" \"; RS=\"\\n\" }\n\nEND\t\t\t\t\t\t{  }",
-	//Java
-	NULL
+	"BEGIN\t\t\t\t\t{ FS=\" \"; RS=\"\\n\" }\n\nEND\t\t\t\t\t\t{  }"
 };
 
 static const char *fileExtension[] = {
@@ -29,8 +25,6 @@ static const char *fileExtension[] = {
 	"c",
 	//C++
 	"cpp",
-	//Header
-	"h",
 	//Shell Script
 	"sh",
 	//Flex
@@ -202,7 +196,7 @@ void menu(){
 
 	header();
 
-	printf("\nLanguage:\n  1) C;\n  2) C++;\n  3) Header;\n  4) Java;\n  5) Shell Script;\n  6) Flex;\n  7) Gawk;\n  0) Exit;\n");
+	printf("\nLanguage:\n  1) Java\n  2) C\n  3) C++\n  4) Shell Script\n  5) Flex\n  6) Gawk\n  7) Add new File\n  0) Exit\n");
 
 	while(opr < 0 || opr > 6){
 		if(read != 0){
@@ -213,34 +207,16 @@ void menu(){
 		read = scanf("%d", &opr);
 	}
 
-	switch(opr){
-		case 0:
-			printf("Good Bye, my love!\n");
-			exit(0);
-			break;
-		case 1:
-			ask4FileName(0);
-			break;
-		case 2:
-			ask4FileName(1);
-			break;
-		case 3:
-			ask4FileName(2);
-			break;
-		case 4:
-			java();
-			break;
-		case 5:
-			ask4FileName(3);
-			break;
-		case 6:
-			ask4FileName(4);
-			break;
-		case 7:
-			ask4FileName(5);
-			break;
-		default:
-			break;
+	if(!opr){
+		printf("Good Bye, my love!\n");
+		exit(0);
+	}
+
+	if(opr == 1){
+		java();
+	}
+	else{
+		ask4FileName(opr - 2);
 	}
 }
 
